@@ -1,42 +1,76 @@
 <?php
 
 namespace RealtimeKit\TenantBroadcast;
+
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 
-
 class TenantResolver
 {
+    /**
+     * The explicitly set tenant ID for the current context.
+     */
+    protected mixed $contextTenantId = null;
+
+    /**
+     * Resolve the current tenant ID.
+     * Priority: Explicit Context > Authenticated User > Fail/Null
+     */
     public function resolve(): mixed
     {
+        // 1. Check for manual context (e.g. background job impersonation)
+        if (! is_null($this->contextTenantId)) {
+            return $this->contextTenantId;
+        }
+
+        // 2. Check for authenticated user
         $user = $this->getAuthenticatedUser();
 
-        if (! $user) {
-            return $this->handleUnauthenticated();
+        if ($user) {
+            $tenantKey = config('tenant-broadcast.tenant_key', 'tenant_id');
+            // Use getAttribute to safely access model attributes
+            $tenantId = $user->getAttribute($tenantKey);
+
+            if ($tenantId) {
+                return $tenantId;
+            }
+            
+            // User exists but has no tenant ID
+            if (config('tenant-broadcast.strict', true)) {
+                 throw new \RuntimeException("Tenant ID column '{$tenantKey}' not found or null on authenticated user.");
+            }
         }
 
-        $tenantKey = config('tenant-broadcast.tenant_key');
-        $tenantId = $user->{$tenantKey};
-
-        if (! $tenantId && config('tenant-broadcast.strict')) {
-            throw new \RuntimeException(
-                "Tenant ID not found on user. Check config 'tenant_key' or disable strict mode."
-            );
-        }
-
-        return $tenantId;
+        return $this->handleUnauthenticated();
     }
 
-    protected function getAuthenticatedUser(): ?Authenticatable
+    /**
+     * Set the current tenant context manually (Impersonation).
+     * Useful for jobs, queues, and commands.
+     */
+    public function impersonate(mixed $tenantId): void
+    {
+        $this->contextTenantId = $tenantId;
+    }
+
+    /**
+     * Clear the manual tenant context.
+     */
+    public function forget(): void
+    {
+        $this->contextTenantId = null;
+    }
+
+    protected function getAuthenticatedUser()
     {
         return Auth::user();
     }
 
     protected function handleUnauthenticated(): mixed
     {
-        if (config('tenant-broadcast.strict')) {
+        if (config('tenant-broadcast.strict', true)) {
             throw new \RuntimeException(
-                'No authenticated user for tenant resolution.'
+                'No tenant context found (User is not logged in, and no impersonation set).'
             );
         }
 

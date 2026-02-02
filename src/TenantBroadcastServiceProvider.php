@@ -21,32 +21,25 @@ class TenantBroadcastServiceProvider extends ServiceProvider
         ], 'tenant-broadcast-config');
 
         // 1. Broadcast::tenantChannel() macro
-        Broadcast::macro('tenantChannel', function (string $channel) {
-            /** @var \Illuminate\Foundation\Auth\User|null $user */
-            $user = auth()->user();
-            $tenantKey = config('tenant-broadcast.tenant_key', 'tenant_id');
+        // Added support for explicit tenant ID argument
+        Broadcast::macro('tenantChannel', function (string $channel, mixed $tenantId = null) {
+            $resolver = app(\RealtimeKit\TenantBroadcast\TenantResolver::class);
             
-            if (! $user || ! $user->getAttribute($tenantKey)) {
-                if (config('tenant-broadcast.strict', true)) {
-                    throw new RuntimeException('No tenant context found for user.');
-                }
-                // Fallback to global if strict mode is off
-                return new PrivateChannel(config('tenant-broadcast.fallback_prefix', 'global.') . $channel);
-            }
+            // Resolve: Explicit Arg > Context > Auth User
+            $resolvedId = $tenantId ?? $resolver->resolve();
 
-            $tenantId = $user->getAttribute($tenantKey);
             $prefix = config('tenant-broadcast.channel_prefix', 'tenant.{id}.');
             
             // Replace placeholder with actual tenant ID
-            $prefixed = str_replace('{id}', (string) $tenantId, $prefix) . $channel;
+            $prefixed = str_replace('{id}', (string) $resolvedId, $prefix) . $channel;
 
             return new PrivateChannel($prefixed);
         });
 
         // 2. Broadcast::tenantPresenceChannel()
-        Broadcast::macro('tenantPresenceChannel', function (string $channel) {
+        Broadcast::macro('tenantPresenceChannel', function (string $channel, mixed $tenantId = null) {
             /** @var \Illuminate\Broadcasting\Channel $instance */
-            $instance = Broadcast::tenantChannel($channel);
+            $instance = Broadcast::tenantChannel($channel, $tenantId);
             return new PresenceChannel($instance->name);
         });
 
@@ -81,5 +74,7 @@ class TenantBroadcastServiceProvider extends ServiceProvider
             __DIR__.'/../config/tenant-broadcast.php',
             'tenant-broadcast'
         );
+
+        $this->app->singleton(\RealtimeKit\TenantBroadcast\TenantResolver::class);
     }
 }
