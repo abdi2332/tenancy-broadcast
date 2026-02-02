@@ -1,6 +1,6 @@
 {
   "name": "tenantwave/broadcast",
-  "description": "Tenant-aware helpers for Laravel Reverb broadcasting",
+  "description": "Tenant-aware broadcasting for shared database multi-tenancy in Laravel",
   "version": "1.0.0",
   "type": "library",
   "license": "MIT",
