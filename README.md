@@ -1,8 +1,10 @@
 # Laravel Tenant Broadcast
 
-A lightweight, opinionated package for securing real-time broadcasting in shared-database multi-tenant applications.
+A lightweight, opinionated package for securing real-time broadcasting in **single shared database** multi-tenant applications.
 
-This package automatically scopes broadcast channels by tenant ID and enforces strict authorization checks, preventing cross-tenant data leaks in Laravel Reverb, Pusher, or other broadcasting drivers. It is designed specifically for applications where tenancy is determined by a column on the `users` table (e.g., `tenant_id`).
+This package automatically scopes broadcast channels by tenant ID and enforces strict authorization checks, preventing cross-tenant data leaks in Laravel Reverb, Pusher, or other broadcasting drivers. 
+
+**Designed specifically for shared database multi-tenancy** where all tenants share a single database and tenancy is determined by a column on the `users` table (e.g., `tenant_id`). This is **not** for multi-database tenancy architectures.
 
 ## Features
 
