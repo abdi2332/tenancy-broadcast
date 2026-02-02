@@ -1,6 +1,7 @@
 {
   "name": "realtime-kit/tenant-broadcast",
   "description": "Tenant-aware helpers for Laravel Reverb broadcasting",
+  "version": "1.0.0",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -25,7 +26,5 @@
         "RealtimeKit\\TenantBroadcast\\TenantBroadcastServiceProvider"
       ]
     }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+  }
 }
