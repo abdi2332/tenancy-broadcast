@@ -35,13 +35,16 @@ php artisan vendor:publish --tag=tenant-broadcast-config
 Configure the package in `config/tenant-broadcast.php` or via your `.env` file.
 
 ```dotenv
+# Enable or disable the package
+TENANT_BROADCAST_ENABLED=true
+
 # The column on your User model that stores the tenant ID
 TENANT_BROADCAST_KEY=tenant_id
 
-# The prefix for your private channels
-TENANT_BROADCAST_PREFIX=tenant
+# The prefix pattern for tenant-scoped channels (use {id} as placeholder)
+TENANT_BROADCAST_PREFIX=tenant.{id}.
 
-# Helper ensuring no generic channels allow access without tenant context
+# Strict mode: throw exceptions if tenant context cannot be resolved
 TENANT_BROADCAST_STRICT=true
 ```
 

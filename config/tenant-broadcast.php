@@ -3,6 +3,16 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Enable Package
+    |--------------------------------------------------------------------------
+    |
+    | Enable or disable the tenant broadcast package.
+    |
+    */
+    'enabled' => env('TENANT_BROADCAST_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Tenant Key
     |--------------------------------------------------------------------------
     |
@@ -16,10 +26,11 @@ return [
     | Channel Prefix
     |--------------------------------------------------------------------------
     |
-    | The prefix used for tenant-isolated channels.
+    | The prefix pattern for tenant-isolated channels.
+    | Use {id} as a placeholder for the tenant ID.
     |
     */
-    'prefix' => env('TENANT_BROADCAST_PREFIX', 'tenant'),
+    'channel_prefix' => env('TENANT_BROADCAST_PREFIX', 'tenant.{id}.'),
 
     /*
     |--------------------------------------------------------------------------
@@ -27,7 +38,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | When enabled, throws exceptions if tenant cannot be resolved.
-    | When disabled, falls back to non-tenant channels with warning.
+    | When disabled, falls back to null (not recommended for production).
     |
     */
     'strict' => env('TENANT_BROADCAST_STRICT', true),
