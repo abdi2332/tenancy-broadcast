@@ -21,7 +21,7 @@ This package automatically scopes broadcast channels by tenant ID and enforces s
 Install the package via Composer:
 
 ```bash
-composer require realtime-kit/tenant-broadcast
+composer require tenantwave/broadcast
 ```
 
 Publish the configuration file:

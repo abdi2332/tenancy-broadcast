@@ -1,12 +1,12 @@
 {
-  "name": "realtime-kit/tenant-broadcast",
+  "name": "tenantwave/broadcast",
   "description": "Tenant-aware helpers for Laravel Reverb broadcasting",
   "version": "1.0.0",
   "type": "library",
   "license": "MIT",
   "authors": [
     {
-      "name": "Realtime Kit",
+      "name": "TenantWave",
       "email": "abdistar16@gmail.com"
     }
   ],

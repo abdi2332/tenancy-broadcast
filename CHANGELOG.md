@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `tenant-broadcast` will be documented in this file.
+All notable changes to `tenantwave/broadcast` will be documented in this file.
 
 ## [Unreleased]
 
