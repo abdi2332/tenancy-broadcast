@@ -16,7 +16,7 @@ class TenantChannelManager
         $tenantId = $this->resolver->resolve();
 
         if (! $tenantId) {
-            // In non-strict mode, return original channel name
+
             return $channel;
         }
 

@@ -20,7 +20,7 @@ class TenantBroadcastServiceProvider extends ServiceProvider
             __DIR__.'/../config/tenant-broadcast.php' => config_path('tenant-broadcast.php'),
         ], 'tenant-broadcast-config');
 
-        // No Macros - We use TenantBroadcast Facade now
+
     }
 
     public function register(): void

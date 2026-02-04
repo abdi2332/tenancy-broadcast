@@ -18,17 +18,14 @@ class TenantResolver
      */
     public function resolve(): mixed
     {
-        // 1. Check for manual context (e.g. background job impersonation)
         if (! is_null($this->contextTenantId)) {
             return $this->contextTenantId;
         }
 
-        // 2. Check for authenticated user
         $user = $this->getAuthenticatedUser();
 
         if ($user) {
             $tenantKey = config('tenant-broadcast.tenant_key', 'tenant_id');
-            // Use getAttribute to safely access model attributes
             $tenantId = $user->getAttribute($tenantKey);
 
             if ($tenantId) {

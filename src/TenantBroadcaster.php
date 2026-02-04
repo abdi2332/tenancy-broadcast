@@ -20,12 +20,10 @@ class TenantBroadcaster
      */
     public function channel(string $channel, mixed $tenantId = null): PrivateChannel
     {
-        // Resolve: Explicit Arg > Context > Auth User
         $resolvedId = $tenantId ?? $this->resolver->resolve();
 
         $prefix = config('tenant-broadcast.channel_prefix', 'tenant.{id}.');
         
-        // Replace placeholder with actual tenant ID
         $prefixed = str_replace('{id}', (string) $resolvedId, $prefix) . $channel;
 
         return new PrivateChannel($prefixed);
@@ -50,17 +48,13 @@ class TenantBroadcaster
         $patternVal = str_replace('{id}', '{tenant_id}', $prefix) . $channel;
 
         return Broadcast::channel($patternVal, function ($user, $tenantId, ...$args) use ($callback) {
-            // 1. Strict Tenant Check
             $userTenantId = $user->getAttribute(config('tenant-broadcast.tenant_key', 'tenant_id'));
             
-            // Compare as strings to be safe
             if ((string) $userTenantId !== (string) $tenantId) {
                 return false;
             }
 
-            // 2. Execute original callback
             if (is_string($callback)) {
-                // Handle class based channel classes
                 return app($callback)->join($user, ...$args);
             }
             
